@@ -367,9 +367,8 @@ export default function Home() {
         }
       );
 
-      alert("Plato actualizado exitosamente");
-
       fetchMenu(selectedRestaurant);
+      setShowModalEdit(false);
     } catch (error) {
       console.error("Error al editar el plato:", error);
       alert("Error al editar el plato.");
@@ -390,7 +389,6 @@ export default function Home() {
           },
         }
       );
-      alert("Plato eliminado exitosamente");
 
       const menuResponse = await fetch(
         "https://meobgislltawbmlyxuhw.supabase.co/rest/v1/Platos?select=*&restaurantId=eq." +
@@ -507,7 +505,6 @@ export default function Home() {
         }
       );
 
-      alert("Plato agregado exitosamente");
       setNewDish({
         name: "",
         price: 0,
@@ -520,6 +517,7 @@ export default function Home() {
       });
 
       fetchMenu(selectedRestaurant);
+      setShowModalAdd(false);
     } catch (error) {
       console.error(error);
       alert("Ocurrió un error al agregar el plato");
@@ -623,15 +621,15 @@ export default function Home() {
       {/* Flecha para volver atrás */}
       {selectedRestaurant && (
         <button
-          onClick={() => setSelectedRestaurant(null)} // Des-selecciona el restaurante
+          onClick={() => setSelectedRestaurant(null)}
           className="absolute top-6 left-6 text-white text-3xl hover:text-gray-300"
         >
-          &#8592; {/* Símbolo de flecha hacia atrás */}
+          &#8592;
         </button>
       )}
 
-      {/* Contenedor de login y restaurante, centrado en el espacio restante */}
-      <div className="flex-grow flex flex-col items-center justify-center py-20">
+      {/* Contenedor principal */}
+      <div className="flex-grow flex flex-col items-center justify-center pt-32 px-4">
         {restaurants.length === 0 ? (
           <div className="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full space-y-6 mt-12">
             <h2 className="text-2xl font-bold text-center text-[#EF4423]">
@@ -662,19 +660,16 @@ export default function Home() {
             )}
           </div>
         ) : !selectedRestaurant ? (
-          <div>
+          <div className="text-center">
             <h2 className="text-2xl font-bold mb-4 text-[#EF4423]">
               Selecciona un Restaurante
             </h2>
-            <ul>
+            <ul className="space-y-4">
               {restaurants.map((restaurant) => (
                 <li
                   key={restaurant.id}
-                  className="bg-white p-4 rounded-lg shadow-md mb-4 cursor-pointer hover:bg-gray-200"
-                  onClick={() => {
-                    console.log(restaurant); // Imprime el restaurante en la consola
-                    handleSelectedRestaurant(restaurant); // Llama a la función con el restaurante seleccionado
-                  }}
+                  className="bg-white p-4 rounded-lg shadow-md cursor-pointer hover:bg-gray-200"
+                  onClick={() => handleSelectedRestaurant(restaurant)}
                 >
                   {restaurant.name}
                 </li>
@@ -686,32 +681,27 @@ export default function Home() {
             <h2 className="text-xl font-semibold text-center text-[#EF4423]">
               Restaurante: {selectedRestaurant.name}
             </h2>
-            {/* Contenedor de insignias */}
             <div className="flex justify-center mt-4 space-x-4">
               {selectedRestaurant.isVegan && (
-                <img
-                  src="https://images.vexels.com/content/136047/preview/gluten-free-ecology-label-badge-6f3058.png" // Ruta de la imagen de la insignia vegana
-                  alt="Vegan"
-                  className="w-8 h-8"
-                />
+                <img src="/vegan.png" alt="Vegan" className="w-8 h-8" />
               )}
               {selectedRestaurant.isVegetarian && (
                 <img
-                  src="https://images.vexels.com/content/136047/preview/gluten-free-ecology-label-badge-6f3058.png" // Ruta de la imagen de la insignia vegetariana
+                  src="/vegetarian.png"
                   alt="Vegetarian"
                   className="w-8 h-8"
                 />
               )}
               {selectedRestaurant.isLactoseFree && (
                 <img
-                  src="https://images.vexels.com/content/136047/preview/gluten-free-ecology-label-badge-6f3058.png" // Ruta de la imagen de la insignia libre de lactosa
+                  src="/lactose-free.png"
                   alt="Lactose Free"
                   className="w-8 h-8"
                 />
               )}
               {selectedRestaurant.isGlutenFree && (
                 <img
-                  src="https://images.vexels.com/content/136047/preview/gluten-free-ecology-label-badge-6f3058.png" // Ruta de la imagen de la insignia libre de gluten
+                  src="/gluten-free.png"
                   alt="Gluten Free"
                   className="w-8 h-8"
                 />
@@ -744,7 +734,7 @@ export default function Home() {
                         </button>
                         <button
                           onClick={() => handleDeleteDish(dish.id)}
-                          className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
+                          className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
                         >
                           🗑️ Eliminar
                         </button>
@@ -754,7 +744,6 @@ export default function Home() {
                 ))}
               </ul>
             </div>
-
             <button
               onClick={() => setShowModalAdd(true)}
               className="mt-4 bg-yellow-500 text-white px-4 py-2 rounded-lg"
@@ -775,7 +764,7 @@ export default function Home() {
       {showModalAdd && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-4/5 max-w-md">
-            <div className="mt-8 bg-white p-6 rounded-lg shadow-md w-full max-w-md">
+            <div className="mt-8 bg-white p-6 rounded-lg shadow-md w-full max-w-md mb-4">
               <h3 className="text-lg font-semibold text-center text-[#EF4423]">
                 Agregar Nuevo Plato
               </h3>
@@ -785,7 +774,7 @@ export default function Home() {
                 placeholder="Nombre del plato"
                 value={newDish.name}
                 onChange={handleInputChange}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#EF4423]"
+                className="mt-2 mb-2 w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#EF4423]"
               />
               <input
                 type="number"
@@ -793,7 +782,7 @@ export default function Home() {
                 placeholder="Precio"
                 value={newDish.price}
                 onChange={handleInputChange}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#EF4423]"
+                className="mb-2 w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#EF4423]"
               />
               <input
                 type="text"
@@ -801,7 +790,7 @@ export default function Home() {
                 placeholder="Descripción"
                 value={newDish.description}
                 onChange={handleInputChange}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#EF4423]"
+                className="mb-2 w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#EF4423]"
               />
               <input
                 type="text"
@@ -821,7 +810,7 @@ export default function Home() {
                   onChange={handleCheckboxChange}
                   className="ml-3 mr-3 scale-125" // Agrandado el checkbox con scale-125
                 />
-                El plato es vegetariano
+                Vegetariano
               </label>
               <label className="block mb-3 flex items-center text-lg">
                 <input
@@ -831,7 +820,7 @@ export default function Home() {
                   onChange={handleCheckboxChange}
                   className="ml-3 mr-3 scale-125" // Agrandado el checkbox con scale-125
                 />
-                El plato es vegano
+                Vegano
               </label>
               <label className="block mb-3 flex items-center text-lg">
                 <input
@@ -841,7 +830,7 @@ export default function Home() {
                   onChange={handleCheckboxChange}
                   className="ml-3 mr-3 scale-125" // Agrandado el checkbox con scale-125
                 />
-                El plato es libre de lactosa
+                Libre de Lactosa
               </label>
               <label className="block mb-3 flex items-center text-lg">
                 <input
@@ -851,10 +840,10 @@ export default function Home() {
                   onChange={handleCheckboxChange}
                   className="ml-3 mr-3 scale-125" // Agrandado el checkbox con scale-125
                 />
-                El plato es apto para celiacos
+                Libre de Gluten
               </label>
             </div>
-            <div className="mt-4 flex justify-between">
+            <div className="flex justify-between mt-6">
               <button
                 onClick={handleAddDish}
                 className="bg-[#EF4423] text-white px-4 py-2 rounded-lg"
@@ -862,8 +851,8 @@ export default function Home() {
                 Guardar
               </button>
               <button
-                onClick={() => setShowModalAdd(false)} // Cierra el modal
-                className="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg"
+                onClick={() => setShowModalAdd(false)}
+                className="bg-gray-300 px-4 py-2 rounded-lg"
               >
                 Cancelar
               </button>
